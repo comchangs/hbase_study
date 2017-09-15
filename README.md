@@ -1,5 +1,3 @@
-# hbase_study
-
 # HBase
 ## Overview
 * HBase는 NoSQL의 한 종류이다. 
@@ -87,3 +85,10 @@ MapReduce의 inpu으로 사용하기 편하나 동시에 파일 Input과 같이 
 * Remote 서버에서는 데이터가 삭제되는 순서를 보장할 수 없다는 것을 주의한다.
 * Table.delete(deletes) 수행 시 실패한 작업은 deletes에 남게 되며, Exception 처리는 try/catch 구문을 이용한다.
 
+##참고사항
+* https://www.joinc.co.kr/w/man/12/hadoop/hbase/about
+* http://bitnine.tistory.com/264
+* http://jdm.kr/blog/189
+* https://hbase.apache.org/book.html
+* https://www.slideshare.net/madvirus/hbase-29278429
+* http://blog.embian.com/10
