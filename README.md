@@ -8,7 +8,9 @@
 * Automatic sharding: HBase tables는 Region을 통해 클러스터에 분산되어 있고 Region은 자동적으로 나누어지고 Data의 양이 늘어남에 따라 재 분산된다.
 * Automatic RegionServer Failover
 * Hadoop/HDFS Integration: HBase는 HDFS를 지원한다.
-* MapReduce: HBase
+* MapReduce: HBase는 HBase를 활용하는 Source와 Sink로써 MapReduce를 통해 massively parallelized processing를 지원한다. 
+* Java Client API: HBase는 프로그램적인 접근을 쉽게 Java API를 이용도록 지원한다.
+* Thrift/REST
 
 
 구글 Bigtable을 모델로 하여 개발된 분산 컬럼 기반 데이터베이스이다. Hadoop HDFS를 기반으로 구현되어 가용성과 확장성을 좋다. 컬럼 단위의 데이터 저장, 압축, 메모리 작업 bloom 필터 등을 제공한다. 
