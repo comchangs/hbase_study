@@ -1,5 +1,5 @@
 # HBase
-## Overview
+## Architecture Overview
 * HBase는 NoSQL의 한 종류이다. 
 * HBase는 분산 Database 이다.
 * HBase는 사실 "Data Base" 보다는 "Data Store"이다. (RDBMS의 Feature인 culumns, secondary indexies, triggers, and advanced query languages 등 많은 부분이 부족하기 떄문)
@@ -8,29 +8,55 @@
 * Automatic sharding: HBase tables는 Region을 통해 클러스터에 분산되어 있고 Region은 자동적으로 나누어지고 Data의 양이 늘어남에 따라 재 분산된다.
 * Automatic RegionServer Failover
 * Hadoop/HDFS Integration: HBase는 HDFS를 지원한다.
-* MapReduce: HBase는 HBase를 활용하는 Source와 Sink로써 MapReduce를 통해 massively parallelized processing를 지원한다. 
+* MapReduce: HBase를 활용하는 Source와 Sink로써 MapReduce를 통해 massively parallelized processing를 지원한다. 
 * Java Client API: HBase는 프로그램적인 접근을 쉽게 Java API를 이용도록 지원한다.
-* Thrift/REST
+* Thrift/REST API: Java가 이닌 Front-end를 위해 Thrift와 REST를 지원한다.
+* Block Cache and Bloom Filters: 고용량 쿼리 최적화를 위해 Block Cache와 Bloom Filter를 지원한다.
+* Operational Management: JMX Metric에 더하여 추가적인 insight를 위해 Build-in web-page를 제공한다.
 
+## Data Model
+Data는 rows와 columns를 갖는 tables로 저장된다. Terminology가 RDBMS와 overlap되지만 도음되는 유사점이 아니다. 대신, HBase table은 multi-dementional map이라고 생각하는 것이 더욱 효과적이다.
 
-구글 Bigtable을 모델로 하여 개발된 분산 컬럼 기반 데이터베이스이다. Hadoop HDFS를 기반으로 구현되어 가용성과 확장성을 좋다. 컬럼 단위의 데이터 저장, 압축, 메모리 작업 bloom 필터 등을 제공한다. 
-
-## HBase Keyword
-### Column Family
-* Colum들의 그룹으로 모든 Column Family의 Member는 같은 접두사를 사용
-* 모든 컬럼패밀리 멤버는 물리적으로 파일시스템에 함께 저장
-* 새로운 컬러페밀리 멤버는 동적으로 추가 가능
-### Row key
-* 임의의 바이트열로 사전순으로 내림차순 정렬
-* 빈 바이트문자열은 테이블의 시작과 끝을 의미
-* 문자열, 정수 바이너리, 직렬화된 데이터 구조까지 어떤 것도 로우키가 될 수 있음
-### Cell
-* 로우키 컬럼 버전이 명시된 튜플
-* 값은 임의의 바이트열이며 타임스템프
-* 테이블 셀은 버전관리 됨
 ### Table
-Row들의 집합 (Row key가 있으며 다수의 column family로 구성)
-schema정의서 컬럼 패밀리만 정의
+Table은 여러 Row들로 구성되어 있다.
+
+### Column
+Column은 콜론(:)나누어지는 Column family와 Column qualifier로 구성되어 있다.
+
+### Column Family
+Column family는 성능 관련 이유로 흔히 column과 그 값이 물리적으로 같이 존재한다.
+각 Column family는 값들이 메모리에 캐싱되어야 하는지 data가 압축되거나 row key가 encoding되는지 등의 storage properties의 집합을 가지고 있다. 
+
+### Column Qualifier
+Column qualifier는 단편의 Data를 제공하기 위해 column family에 추가되어 있다. Column family "content"가 있다면 Column qualifier는 "content:html"나 "content:pdf"일 것이다. 비록 Column family는 table 생성 시 고정되지만, Column qualifier는 변할 수 있고, row들 사이에서도 매우 다들 수 있다.
+
+### Cell
+Cell은 값의 버전을 나타내는 row와 column family, column qualifier, 값과 Timestamp를 포함하고 있는 결합이다.
+
+### Timestamp
+각 값과 나란히 쓰여진 timestamp로 식별자로써 값의 주어진 버전이기도 하다. 기본적으로 timestamp는 RegionServer에서 data를 쓸 때 나타나는 시간이지만 data를 cell에 넣을 때 특정 timestamp 값을 지정할 수 있다.
+
+## Conceptual View
+|Row Key|Time Stamp|ColumnFamily contents|ColumnFamily anchor|ColumnFamily people|
+|-------|----------|---------------------|-------------------|-------------------------|
+|"com.cnn.www"|t9||anchor:cnnsi.com = "CNN"||
+|"com.cnn.www"|t8||anchor:my.look.ca = "CNN.com"||
+|"com.cnn.www"|t6|contents:html = "<html>…​"|||
+|"com.cnn.www"|t5|contents:html = "<html>…​"|||
+|"com.cnn.www"|t3|contents:html = "<html>…​"|||
+|"com.example.www"|t5|contents:html = "<html>…​"||people:author = "John Doe"|
+
+## Physical View
+|Row Key|Time Stamp|ColumnFamily anchor|
+|-------|----------|-------------------|
+|"com.cnn.www"|t9|anchor:cnnsi.com = "CNN"|
+|"com.cnn.www"|t8|anchor:my.look.ca = "CNN.com"|
+
+|Row Key|Time Stamp|ColumnFamily contents|
+|-------|----------|---------------------|
+|"com.cnn.www"|t6|contents:html = "<html>…​"|
+|"com.cnn.www"|t5|contents:html = "<html>…​"|
+|"com.cnn.www"|t3|contents:html = "<html>…​"|
 
 ## Sclability
 
