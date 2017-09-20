@@ -32,9 +32,19 @@ Column qualifier는 단편의 Data를 제공하기 위해 column family에 추�
 
 ### Cell
 Cell은 값의 버전을 나타내는 row와 column family, column qualifier, 값과 Timestamp를 포함하고 있는 결합이다.
+```
+{row, column, version}
+```
 
 ### Timestamp
 각 값과 나란히 쓰여진 timestamp로 식별자로써 값의 주어진 버전이기도 하다. 기본적으로 timestamp는 RegionServer에서 data를 쓸 때 나타나는 시간이지만 data를 cell에 넣을 때 특정 timestamp 값을 지정할 수 있다.
+
+### Row Key
+Row Key는 해석되지 않는 바이트이다.
+
+### Row
+테이블에서 가장 낮은 순서로 첫 번째로 표시되는 사전식으로 정렬된다.
+빈 바이트 배열은 테이블의 네임 스페이스의 시작과 끝을 나타내는데 사용된다.
 
 ## Conceptual View
 |Row Key|Time Stamp|ColumnFamily contents|ColumnFamily anchor|ColumnFamily people|
@@ -58,19 +68,12 @@ Cell은 값의 버전을 나타내는 row와 column family, column qualifier, �
 |"com.cnn.www"|t5|contents:html = "<html>…​"|
 |"com.cnn.www"|t3|contents:html = "<html>…​"|
 
-## Sclability
-
-## Architecture
-![IMAGE](quiver-image-url/588FEB1390114EB860B93D8980903B28.jpg =550x361)
-
-## 장단점
-### 장점
-성능이슈가 발생할 경우 계속 리전서버만 추가하면 성능유지
-fail over가 쉽과 관리 용이
-MapReduce의 input으로 사용하기 편함
-### 단점
-MapReduce의 inpu으로 사용하기 편하나 동시에 파일 Input과 같이 사용시 CPU사용률이 높아 Region서버가 쉽게 다운됨
-특정 Region 서버에 특정 table의 Region이 집중됙 ㅣ쉬우며 이는 성능 저하로 이어짐. 구성시 HBase의 적절한 설계사 필요
+## Namespace
+RDB와 유사한 논리적인 그룹이다.
+이 추상적 개념은 아래의 multi-tenancy 관련 기능의 기초가 된다.
+* Quota Management: Namespace가 소비하는 자원의 양을 제한하다.
+* Namespace Security Administration: tenants를 위한 보안관리의 다른 레벨을 제공한다.
+* Region server groups: Namespace/table은 RegionServer의 하위 집합이라고 할 수 있어 거친 수준의 격리가 보장된다.
 
 ## Operation
 ### Points
@@ -112,6 +115,25 @@ MapReduce의 inpu으로 사용하기 편하나 동시에 파일 Input과 같이 
 * put list 와 유사하게 동작한다.
 * Remote 서버에서는 데이터가 삭제되는 순서를 보장할 수 없다는 것을 주의한다.
 * Table.delete(deletes) 수행 시 실패한 작업은 deletes에 남게 되며, Exception 처리는 try/catch 구문을 이용한다.
+
+
+## Sclability
+
+## Architecture
+![IMAGE](quiver-image-url/588FEB1390114EB860B93D8980903B28.jpg =550x361)
+
+## 장단점
+### 장점
+성능이슈가 발생할 경우 계속 리전서버만 추가하면 성능유지
+fail over가 쉽과 관리 용이
+MapReduce의 input으로 사용하기 편함
+### 단점
+MapReduce의 inpu으로 사용하기 편하나 동시에 파일 Input과 같이 사용시 CPU사용률이 높아 Region서버가 쉽게 다운됨
+특정 Region 서버에 특정 table의 Region이 집중됙 ㅣ쉬우며 이는 성능 저하로 이어짐. 구성시 HBase의 적절한 설계사 필요
+
+
+
+
 
 ##참고사항
 * https://www.joinc.co.kr/w/man/12/hadoop/hbase/about
