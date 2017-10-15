@@ -5,7 +5,7 @@
 ### Overview
 * HBase는 NoSQL의 한 종류이다. 
 * HBase는 분산 Database 이다.
-* HBase는 사실 "Data Base" 보다는 "Data Store"이다. (RDBMS의 Feature인 culumns, secondary indexies, triggers, and advanced query languages 등 많은 부분이 부족하기 떄문)
+* HBase는 사실 "Data Base" 보다는 "Data Store"이다. (RDBMS의 Feature인 culumns, secondary indexies, triggers, and advanced query languages 등 많은 부분이 부족하기 때문)
 * HBase는 선형적이고 모듈화된 scaling 위해 많은 기능을 제공한다.
 * **Strongly consistent reads/writes**: HBase는 "eventually consistent" DataStore가 아니다. 이는 매우 빠른 counter aggregation이 가능하게 한다. 
 * **Automatic sharding**: HBase tables는 Region을 통해 클러스터에 분산되어 있고 Region은 자동적으로 나누어지고 Data의 양이 늘어남에 따라 재 분산된다.
@@ -32,7 +32,7 @@ Catalog table `hbase:meta`는 하나의 HBase table이고 HBase shell의 `list` 
 * `info:serverstartcode` 해당 Region을 담고 있는 RegionServer process의 시작 시간
 
 ## Data Model
-Data는 rows와 columns를 갖는 tables로 저장된다. Terminology가 RDBMS와 overlap되지만 도음되는 유사점이 아니다. 대신, HBase table은 multi-dementional map이라고 생각하는 것이 더욱 효과적이다.
+Data는 rows와 columns를 갖는 tables로 저장된다. Terminology가 RDBMS와 overlap되지만 완전히 같은 유사점이 아니다. 대신, HBase table은 multi-dementional map이라고 생각하는 것이 더욱 효과적으로 이해할 수 있다.
 
 ### Table
 Table은 여러 Row들로 구성되어 있다.
@@ -58,13 +58,13 @@ Cell은 값의 버전을 나타내는 row와 column family, column qualifier, �
 각 값과 나란히 쓰여진 timestamp로 식별자로써 값의 주어진 버전이기도 하다. 기본적으로 timestamp는 RegionServer에서 data를 쓸 때 나타나는 시간이지만 data를 cell에 넣을 때 특정 timestamp 값을 지정할 수 있다.
 
 ### Row Key
-Row Key는 해석되지 않는 바이트이다.
+Row Key는 Human readable하지 않은 바이트로 구성된 키이다.
 
 ### Row
-단일 row에 대한 읽기/쓰기는 원자성이 보장
-테이블에서 가장 낮은 순서로 첫 번째로 표시되는 사전식으로 정렬
-빈 바이트 배열은 테이블의 네임 스페이스의 시작과 끝을 나타내는데 사용
-table은 동적으로 row key의 범위를 잘라서 파티셔닝(tablet)
+단일 row에 대한 읽기/쓰기는 원자성이 보장한다.
+테이블에서 가장 낮은 순서로 첫 번째로 표시되는 사전순 정렬된다.
+빈 바이트 배열은 테이블의 네임 스페이스의 시작과 끝을 나타내는데 사용된다.
+table은 동적으로 row key의 범위를 잘라서 파티셔닝(tablet)한다.
 
 ### Conceptual View
 |Row Key|Time Stamp|ColumnFamily contents|ColumnFamily anchor|ColumnFamily people|
@@ -167,10 +167,10 @@ RDB와 유사한 논리적인 그룹이다.
 순차적으로 증가되는 key를 부여한다면, 최신의 새로운 사용자가 더 활동적인 경향을 보이기 때문에 대부분의 트레픽이 한정된 수의 노드에 집중되는 결과를 초래할 수 있다. 이런 상황에선 뒤집어진 ID를 사용해 모든 노드로 데이터가 분산되도록 고려해야 한다.
 
 #### Try to minimize row and column sizes
-* Column Families: 가급적이면 이름을 짧게 하자 (예: data는 d)
+* Column Families: 가급적이면 이름을 짧게 하자. (예: data는 d)
 * Attributes: 예로 myVeryImportantAttribute가 읽기 쉽더라도 via로 저장하는 것이 좋다.
-* Rowkey Length: 키는 가능한  짧게 하자 (트레이드 오프 고려)
-* Byte Patterns: 8바이트의 long을 저장하면 3x바이트가 됨
+* Rowkey Length: 키는 가능한  짧게 하자. (트레이드 오프 고려)
+* Byte Patterns: 8바이트의 long을 저장하면 3x바이트가 된다.
 
 #### Reverse Timestamps
 일반적인 문제로 database processing에서 가장 최근의 값을 빠르게 찾는 것이다.
@@ -180,7 +180,7 @@ RDB와 유사한 논리적인 그룹이다.
 Rowkey도 ColumnFamily은 범위에 있다. 그러므로 한 table에서 충돌이 없는 상태로 존재하는 ColumnFamily이다.
 
 #### Immutability of Rowkeys
-Row key는 변할 수 없고, "changed"는 삭제하고 다시 삽입하는 것
+Row key는 변할 수 없고, "changed"는 삭제하고 다시 삽입하는 것이다.
 
 ## Apache HBase Coproccessors
 Coprocessor framework는 data를 관리하는 RegionServer에 직접 작성한 커스텀 코드를 동작시키 우한 메커니즘을 제공한다.
@@ -201,7 +201,7 @@ Observer coprocessor는 특정 event가 발생할 전후에 custom code가 실�
 MapReduce는 계산이 Data가 있는 위치로 이동하는 원칙으로 동작한다. Coprocessor 역시 같은 원칙으로 동작한다. 
 
 ##### AOP
-Aspect Oriented Programming (AOP)이 익숙하다면, Coprocessor를 마지막 도착지로 가기전에 요청을 가로채고 custom code를 실행핟도록 적용하는 것으로으 볼 수 있다.
+Aspect Oriented Programming (AOP)이 익숙하다면, Coprocessor를 마지막 도착지로 가기전에 요청을 가로채고 custom code를 실행하도록 적용하는 것으로으 볼 수 있다.
 
 #### Coprocessor Implementation Overview
 1. Coprocessor interface 중 하나를 구현
@@ -211,12 +211,14 @@ Aspect Oriented Programming (AOP)이 익숙하다면, Coprocessor를 마지막 �
 ### Type of Coprocessors
 
 #### Observer Coprocessors
-Event가 발생되지 전후에 Trigger되는 것.
+Event가 발생 전후에 Trigger되어 사용한다.
 * **RegionObserver**: `Get`과 `Put` operation 같이 Region에서의 Event를 Observe하기 위해 사용
 * **RegionServerObserver**: 시작 또는 정지, Merge, Commit, Rollback 등 RegionSercer의 운영에 관계된 Event를 Observe하기 위해 사용
 * **MasterObserver**: Table 생성또는 삭제, 수정 등 HBase Master와 관계된 Event를 Observe하기 위해 사용
 * **WalObserver**: Write-Ahead Log로 쓰기 것에 관계된 Event를 Observe하기 위해 사용
-* Endpoint Coprocessor: Endpoint Coprocessor는 Data의 위치에서 바로 계산을 실행할 수 있도록 사용
+
+#### Endpoint Coprocessor
+Endpoint Coprocessor는 Data의 위치에서 바로 계산을 실행할 수 있도록 사용한다.
 
 ## Reference
 * https://hbase.apache.org/book.html
